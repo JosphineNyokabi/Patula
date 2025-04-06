@@ -1,1 +1,1 @@
-# Patula
+Technical Manual - Information Retrieval System
