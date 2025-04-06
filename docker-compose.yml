@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  tika:
+    image: apache/tika
+    ports:
+      - "9998:9998"
+
+  indexer:
+    build: ./indexer
+    volumes:
+      - /mnt/data/pinecones:/mnt/data/pinecones
+    depends_on:
+      - tika
+      - elasticsearch
+
+volumes:
+  esdata:
